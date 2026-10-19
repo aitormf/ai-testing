@@ -51,4 +51,4 @@ Integramos las PRs con **squash merge**. El título de la PR sigue [Conventional
 
 ## Referencias
 
-- `docs/informe-decisiones-iniciales.md` §5
+- Entrevista de arranque del proyecto (2026-10-14)

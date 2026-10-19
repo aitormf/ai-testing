@@ -59,4 +59,4 @@ Un runner nuevo es un fichero en `adapters/runners/` más una línea en el regis
 
 ## Referencias
 
-- `docs/informe-decisiones-iniciales.md` §3
+- Entrevista de arranque del proyecto (2026-10-14)

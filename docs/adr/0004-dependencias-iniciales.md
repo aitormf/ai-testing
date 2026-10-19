@@ -30,7 +30,7 @@ El principio P8 de `docs/ARCHITECTURE.md` exige aprobación humana y un ADR para
 |---|---|
 | uv | Gestión del entorno, de Python 3.13 y del lockfile |
 | ruff | Formato y lint |
-| mypy | Tipado (decisión del informe inicial) |
+| mypy | Tipado (decisión de la entrevista de arranque) |
 | pytest y pytest-cov | Tests y cobertura mínima del 80 % |
 | import-linter | Comprobar la regla de capas ([ADR-0001](0001-arquitectura-hexagonal-ligera.md)) |
 
@@ -40,7 +40,7 @@ Las herramientas de pre-commit y CI que instale `setup-guardrails-python` (por e
 
 | Alternativa | Por qué se descartó |
 |---|---|
-| Salida con `print` y formato a mano | Más código propio para tablas y colores; Rich ya era la opción prevista en el informe inicial. |
+| Salida con `print` y formato a mano | Más código propio para tablas y colores; Rich ya era la opción prevista en la entrevista de arranque. |
 | pip + venv, o Poetry | uv es más rápido, gestiona la versión de Python y el lockfile en una sola herramienta. |
 | black + flake8 + isort | ruff los sustituye con una sola herramienta. |
 
@@ -58,4 +58,4 @@ Las herramientas de pre-commit y CI que instale `setup-guardrails-python` (por e
 
 ## Referencias
 
-- `docs/informe-decisiones-iniciales.md` §2 y §3
+- Entrevista de arranque del proyecto (2026-10-14)

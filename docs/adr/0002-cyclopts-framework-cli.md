@@ -53,4 +53,4 @@ Motivos:
 
 ## Referencias
 
-- `docs/informe-decisiones-iniciales.md` §4
+- Entrevista de arranque del proyecto (2026-10-14)
