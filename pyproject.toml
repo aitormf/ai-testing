@@ -1,0 +1,86 @@
+[project]
+name = "ia-testing"
+version = "0.1.0"
+description = "Local CLI to compare how different AI coding agents solve the same programming task."
+readme = "README.md"
+authors = [
+    { name = "Aitor Martínez" }
+]
+requires-python = ">=3.13"
+dependencies = []
+
+[project.scripts]
+ia-testing = "ia_testing.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.12.19,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "C4", "UP", "SIM", "RUF", "S", "PLE"]
+# S = flake8-bandit (security) · PLE includes PLE2502 (bidirectional Unicode, "Trojan Source")
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106"]   # assert and test passwords allowed ONLY in tests
+
+[tool.mypy]
+strict = true
+files = ["src", "tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Tests that need real external tools (Karajan, agent CLIs) run with `pytest -m integration`.
+addopts = "-q --strict-markers -m 'not integration'"
+markers = [
+    "integration: needs real external tools (Karajan, agent CLIs); excluded by default",
+]
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+
+[tool.uv]
+# Cooldown: do not resolve versions published less than 7 days ago (requires uv >= 0.9.17).
+# Malicious packages are usually pulled within hours or days.
+exclude-newer = "7 days"
+
+[dependency-groups]
+dev = [
+    "import-linter>=2.15",
+    "mypy>=2.4.0",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.17.0",
+]
+# Temporary exception for an urgent patch (remove it afterwards):
+# exclude-newer-package = { urgent-package = false }
+
+# Contracts derived from principles P1-P3 in docs/ARCHITECTURE.md (ADR-0001).
+[tool.importlinter]
+root_package = "ia_testing"
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Layers: cli -> adapters -> app -> domain (P1, P2)"
+type = "layers"
+layers = [
+    "ia_testing.cli",
+    "ia_testing.adapters",
+    "ia_testing.app",
+    "ia_testing.domain",
+]
+
+[[tool.importlinter.contracts]]
+name = "No subprocess outside adapters (P3)"
+type = "forbidden"
+source_modules = ["ia_testing.domain", "ia_testing.app"]
+forbidden_modules = ["subprocess"]
