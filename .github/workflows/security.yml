@@ -1,0 +1,97 @@
+# Actions are pinned to a full commit SHA; Dependabot keeps them up to date.
+name: Security
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 5 * * *"   # daily: new CVEs in dependencies that have not changed
+
+permissions:
+  contents: read           # least privilege for the whole workflow
+
+jobs:
+  dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+      - name: Known vulnerabilities (pip-audit on the lockfile)
+        run: |
+          uv export --frozen --no-emit-project -o requirements-audit.txt
+          uvx pip-audit -r requirements-audit.txt --disable-pip
+
+  sast:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 0               # comparing against the base needs the history
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+      - name: Semgrep (on PRs, only findings introduced by the PR)
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          BASE=$(git merge-base "origin/$BASE_REF" HEAD)
+          test -n "$BASE"   # no base, fail: keeps the check from passing silently
+          uvx semgrep scan --config p/python --config p/owasp-top-ten \
+            --baseline-commit "$BASE" --error --metrics off
+      - name: Semgrep (on main and daily, full scan)
+        if: github.event_name != 'pull_request'
+        run: uvx semgrep scan --config p/python --config p/owasp-top-ten --error --metrics off
+
+  # CodeQL: free on public repos; private repos need GitHub Advanced Security.
+  # codeql:
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: read
+  #     security-events: write
+  #   steps:
+  #     - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+  #       with:
+  #         persist-credentials: false
+  #     - uses: github/codeql-action/init@v3
+  #       with:
+  #         languages: python
+  #         build-mode: none
+  #         queries: security-extended
+  #     - uses: github/codeql-action/analyze@v3
+
+  workflows:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+      - name: zizmor
+        run: uvx zizmor .github/workflows
+
+  guardrails:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+      - name: Hidden Unicode in agent files
+        run: |
+          git ls-files 'AGENTS.md' '**/AGENTS.md' 'CLAUDE.md' '**/CLAUDE.md' '.claude/**' '.mcp.json' '.github/**' \
+            | xargs -r uv run python scripts/check_hidden_unicode.py
+      - name: Do not silence security rules without a reason
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          # A new "# noqa: S…" requires "security-reviewed:" with the reason on the same line.
+          if git diff "origin/$BASE_REF...HEAD" -- '*.py' \
+             | grep -E '^\+.*noqa:.*\bS[0-9]{3}' | grep -v 'security-reviewed:'; then
+            echo "::error::Found '# noqa: S…' without 'security-reviewed: <reason>'."
+            exit 1
+          fi
