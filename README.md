@@ -11,3 +11,7 @@
 - [Cómo contribuir](CONTRIBUTING.md)
 - [Seguridad](SECURITY.md)
 - [Instrucciones para agentes de IA](AGENTS.md)
+
+## Licencia
+
+[GPL-3.0-or-later](LICENSE).

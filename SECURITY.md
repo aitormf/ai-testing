@@ -1,10 +1,10 @@
 # Política de seguridad
 
-ia-testing es una CLI local en un repositorio privado. Solo se mantiene la rama `main`.
+ia-testing es una CLI local de código abierto. Solo se mantiene la rama `main`.
 
 ## Cómo informar de una vulnerabilidad
 
-**No abras un issue ni una PR.** Escribe por privado a @aitormf con:
+**No abras un issue, PR ni discusión pública.** Usa [GitHub Private Vulnerability Reporting](https://github.com/aitormf/ai-testing/security/advisories/new) (pestaña *Security* → *Report a vulnerability*) e incluye:
 
 - Descripción del problema e impacto.
 - Pasos para reproducirlo.

@@ -13,8 +13,8 @@ Este documento explica cómo preparar el entorno, cómo proponer cambios y qué 
 Requisitos: [uv](https://docs.astral.sh/uv/) y git. uv instala Python 3.13 según `.python-version`. Las herramientas que se comparan (Karajan Code, Claude Code, Codex…) solo hacen falta para los tests de integración y para usar la CLI de verdad.
 
 ```bash
-git clone git@github.com:aitormf/ia-testing.git
-cd ia-testing
+git clone git@github.com:aitormf/ai-testing.git
+cd ai-testing
 uv sync                     # crea .venv e instala dependencias desde uv.lock
 uv tool install prek        # o pre-commit
 prek install                # activa los hooks de pre-commit

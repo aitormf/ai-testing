@@ -6,7 +6,7 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: "0 5 * * *"   # daily: new CVEs in dependencies that have not changed
+    - cron: "0 5 * * 1"   # weekly (Monday): new CVEs and Semgrep rules on unchanged code
 
 permissions:
   contents: read           # least privilege for the whole workflow
@@ -41,7 +41,7 @@ jobs:
           test -n "$BASE"   # no base, fail: keeps the check from passing silently
           uvx semgrep scan --config p/python --config p/owasp-top-ten \
             --baseline-commit "$BASE" --error --metrics off
-      - name: Semgrep (on main and daily, full scan)
+      - name: Semgrep (on main and weekly, full scan)
         if: github.event_name != 'pull_request'
         run: uvx semgrep scan --config p/python --config p/owasp-top-ten --error --metrics off
 
