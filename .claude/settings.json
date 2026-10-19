@@ -18,7 +18,6 @@
       "Bash(pip install *)",
       "Bash(uv pip install *)",
       "Bash(git commit --no-verify *)",
-      "Bash(git push *)",
       "Read(./.env)",
       "Read(./.env.*)",
       "Edit(./.env)",
@@ -38,6 +37,10 @@
           {
             "type": "command",
             "command": "uv run python \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/check_new_package.py"
+          },
+          {
+            "type": "command",
+            "command": "uv run python \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/ask_on_force_push.py"
           }
         ]
       }
