@@ -3,6 +3,8 @@ name = "ia-testing"
 version = "0.1.0"
 description = "Local CLI to compare how different AI coding agents solve the same programming task."
 readme = "README.md"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
 authors = [
     { name = "Aitor Martínez", email = "aitor.martinez.fernandez@gmail.com" }
 ]
