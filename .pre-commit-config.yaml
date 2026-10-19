@@ -1,0 +1,59 @@
+# Works with prek and pre-commit: `prek install` activates the hooks.
+default_install_hook_types: [pre-commit]
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.1
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.13.1
+    hooks:
+      - id: uv-lock          # uv.lock in sync with pyproject.toml
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+
+  # No commitizen hook: PRs are squash-merged, so only the PR title is validated in CI
+  # (ADR-0003); commits inside a branch are free-form.
+
+  # mypy and import-linter run through `uv run` to use the versions in uv.lock.
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        entry: uv run mypy
+        language: system
+        types: [python]
+        pass_filenames: false
+      - id: lint-imports
+        name: import-linter
+        entry: uv run lint-imports
+        language: system
+        types: [python]
+        pass_filenames: false
+      - id: hidden-unicode
+        name: Hidden Unicode in agent files and docs
+        entry: uv run python scripts/check_hidden_unicode.py
+        language: system
+        files: '(^|/)(AGENTS|CLAUDE)\.md$|^\.claude/|^\.cursor/|^\.mcp\.json$|^\.github/|^docs/.*\.md$'
+      - id: zizmor
+        name: zizmor (GitHub Actions security)
+        entry: uvx zizmor
+        language: system
+        files: '^\.github/workflows/.*\.ya?ml$'

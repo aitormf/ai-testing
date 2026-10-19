@@ -34,7 +34,21 @@ El principio P8 de `docs/ARCHITECTURE.md` exige aprobación humana y un ADR para
 | pytest y pytest-cov | Tests y cobertura mínima del 80 % |
 | import-linter | Comprobar la regla de capas ([ADR-0001](0001-arquitectura-hexagonal-ligera.md)) |
 
-Las herramientas de pre-commit y CI que instale `setup-guardrails-python` (por ejemplo gitleaks) se añaden a esta tabla en la misma PR que las introduzca.
+**Hooks y CI** (no son dependencias del paquete: se ejecutan con prek, `uvx` o como GitHub Actions):
+
+| Herramienta | Para qué |
+|---|---|
+| prek | Ejecutar los hooks de pre-commit (compatible con pre-commit) |
+| pre-commit-hooks | Comprobaciones básicas: espacios, fin de fichero, YAML, TOML, conflictos y ficheros grandes |
+| gitleaks | Detectar secretos en pre-commit y en CI |
+| zizmor | Seguridad de los workflows de GitHub Actions |
+| pip-audit | Vulnerabilidades conocidas en las dependencias del lockfile (CI) |
+| Semgrep | Análisis estático de seguridad (CI) |
+| Dependabot | Actualizar dependencias y actions, con cooldown de 7 días |
+| `actions/checkout`, `astral-sh/setup-uv` | Pasos base de los workflows, fijados a un SHA |
+| `amannn/action-semantic-pull-request` | Validar el título de la PR en Conventional Commits ([ADR-0003](0003-squash-merge-conventional-commits.md)), fijada a un SHA |
+
+Las herramientas que se añadan después a los hooks o a CI se anotan en esta tabla en la misma PR que las introduzca.
 
 ## Alternativas consideradas
 
@@ -43,6 +57,8 @@ Las herramientas de pre-commit y CI que instale `setup-guardrails-python` (por e
 | Salida con `print` y formato a mano | Más código propio para tablas y colores; Rich ya era la opción prevista en la entrevista de arranque. |
 | pip + venv, o Poetry | uv es más rápido, gestiona la versión de Python y el lockfile en una sola herramienta. |
 | black + flake8 + isort | ruff los sustituye con una sola herramienta. |
+| commitizen como hook de commit-msg | Con squash merge solo importa el título de la PR, que se valida en CI; los commits de la rama son libres ([ADR-0003](0003-squash-merge-conventional-commits.md)). |
+| Script propio para validar el título de la PR | Se prefirió una action mantenida y más completa, fijada a un SHA. |
 
 ## Consecuencias
 

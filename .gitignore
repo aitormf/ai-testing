@@ -218,3 +218,18 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Guardrails (setup-guardrails-python)
+.venv/
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Agentes de IA: personal
+CLAUDE.local.md
+.claude/settings.local.json
+
+# SO / editores
+.DS_Store
+.idea/
