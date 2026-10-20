@@ -29,9 +29,9 @@ flowchart LR
 
 | Ruta | Responsabilidad | Notas |
 |---|---|---|
-| `src/ia_testing/domain/` | `Task`, `RunResult`, `Comparison` y los Protocols `Runner`, `Workspace` y `ResultStore` | Python puro: sin E/S ni `subprocess` |
+| `src/ia_testing/domain/` | `Task`, `RunResult`, `Comparison`; los Protocols `Runner`, `Workspace`, `ResultStore` y `TaskFileSource`; y `task_file.py` (modelo y validación del fichero de tarea: `parse_task_file()`) | Python puro: sin E/S ni `subprocess` |
 | `src/ia_testing/app/` | Casos de uso: `run_comparison()`, `list_runners()` | Solo depende de `domain` |
-| `src/ia_testing/adapters/runners/` | Un fichero por runner (`karajan.py`, más adelante `claude.py`, `codex.py`…) y el registro de runners | Único sitio donde se llama a herramientas externas |
+| `src/ia_testing/adapters/runners/` | Un fichero por runner (`karajan.py`, más adelante `claude.py`, `codex.py`…) y el registro de runners (`registry.py`: `RUNNER_NAMES`) | Único sitio donde se llama a herramientas externas |
 | `src/ia_testing/adapters/workspace/` | Creación y limpieza del `git worktree` de cada ejecución | Implementa `Workspace`; llama a `git` por `subprocess` |
 | `src/ia_testing/adapters/storage/` | Persistencia de resultados en JSON en disco | Implementa `ResultStore` |
 | `src/ia_testing/adapters/report/` | Salida por terminal (Rich) y Markdown | |
