@@ -7,6 +7,7 @@
 ## Documentación
 
 - [Arquitectura y principios](docs/ARCHITECTURE.md)
+- [Fichero de tarea (esquema de `ia-testing validate`)](docs/config_file.md)
 - [Decisiones (ADRs)](docs/adr/README.md)
 - [Cómo contribuir](CONTRIBUTING.md)
 - [Seguridad](SECURITY.md)

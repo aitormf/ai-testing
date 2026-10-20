@@ -1,0 +1,1 @@
+"""Output of CLI commands."""
