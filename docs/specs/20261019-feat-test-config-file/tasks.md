@@ -60,7 +60,7 @@ resolvió el 2026-10-20 así:
 - [x] T7. `docs/ARCHITECTURE.md` §3: `domain/task_file.py` y el Protocol `TaskFileSource` en la
   fila de `domain`; el registro en la fila de `runners/` — ficheros: `docs/ARCHITECTURE.md` —
   verificación: revisión del diff
-- [ ] ✅ Punto de control PR 1: `./scripts/check.sh` en verde. Rama `feat/task-file-model`. PR
+- [x] ✅ Punto de control PR 1 (#9): `./scripts/check.sh` en verde. Rama `feat/task-file-model`. PR
   `feat: add task file model and validation`, avisando en la descripción de que supera las
   400 líneas por excepción aceptada en el plan.
 
@@ -114,12 +114,13 @@ resolvió el 2026-10-20 así:
   - §10: el fichero de tarea no es configuración de cyclopts.
 
   Verificación: revisión del diff.
-- [ ] ✅ Punto de control PR 2: `./scripts/check.sh` en verde. PR
-  `feat: add validate command for task files`, con el mismo aviso de tamaño. Se apila sobre
-  la rama de la PR 1 (base = rama de la PR 1, no `main`), decisión de @aitormf (2026-10-20).
+- [x] ✅ Punto de control PR 2 (#10): `./scripts/check.sh` en verde. PR
+  `feat: add validate command for task files`, con el mismo aviso de tamaño. Iba a apilarse
+  sobre la rama de la PR 1 (decisión de @aitormf, 2026-10-20), pero la #9 se integró antes y la
+  PR 2 se abrió contra `main` tras un rebase.
 
 ## Cierre
 
-- [ ] Todos los criterios de aceptación de la spec (CA-01 a CA-18) y los tests negativos de
+- [x] Todos los criterios de aceptación de la spec (CA-01 a CA-18) y los tests negativos de
   Seguridad tienen un test que pasa (ver la tabla de Pruebas de `plan.md`).
-- [ ] `./scripts/check.sh` sale en verde.
+- [x] `./scripts/check.sh` sale en verde.
