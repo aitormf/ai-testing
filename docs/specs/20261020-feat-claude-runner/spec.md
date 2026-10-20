@@ -67,7 +67,8 @@ mano, y apuntar coste y resultado por separado, sin garantía de que todos parta
 ### Directorio de ejecución y worktrees
 - RF-07: Cada ejecución tiene un `run-id` con formato `YYYYMMDD-HHMMSS` en hora local. Su
   directorio `<output-dir>/<run-id>/` se crea de forma exclusiva; si ya existe, se añade un sufijo
-  (`-2`, `-3`…). Dentro van un worktree por cada `id` de configuración, `results.json` y `logs/`.
+  (`-2`, `-3`…). Dentro van `worktrees/<id>/` (un worktree por cada `id` de configuración),
+  `results.json` y `logs/`.
 - RF-08: La ref se resuelve a un commit al empezar. Todos los worktrees de la ejecución se crean
   desde ese commit, **antes de lanzar ningún runner**, cada uno en una rama nueva
   `ia-testing/<run-id>/<id>`. Se conservan al terminar. No se inicializan submódulos ni Git LFS.
@@ -168,7 +169,7 @@ mano, y apuntar coste y resultado por separado, sin garantía de que todos parta
 ### Ejecución normal
 - Dado un fichero válido con dos configuraciones `claude` y un repositorio limpio, cuando ejecuto
   `run`, entonces se crean dos worktrees desde el mismo commit en
-  `<padre>/<repo>.ia-testing/<run-id>/`, cada uno en su rama `ia-testing/<run-id>/<id>`, con sus
+  `<padre>/<repo>.ia-testing/<run-id>/worktrees/`, cada uno en su rama `ia-testing/<run-id>/<id>`, con sus
   logs y su entrada en `results.json`, y el código de salida es 0 si ambas terminan bien.
 - Dado que ejecuto `run` sin `--repo` ni `--ref`, cuando empieza, entonces usa el repositorio del
   directorio actual y su `HEAD`; dado `--repo <subdirectorio>` y `--ref <otra-rama>`, entonces usa
