@@ -66,10 +66,10 @@ resolvió el 2026-10-20 así:
 
 ## Fase 2: lectura, CLI y documentación (PR 2)
 
-- [ ] T8. `uv add "cyclopts>=4,<5"` y comprobar que `result_action="return_value"` existe en la
+- [x] T8. `uv add "cyclopts>=4,<5"` y comprobar que `result_action="return_value"` existe en la
   versión resuelta — ficheros: `pyproject.toml`, `uv.lock` — verificación: `uv sync` +
   `./scripts/check.sh`
-- [ ] T9. [P] `TomlTaskFileSource(path)` — ficheros: `src/ia_testing/adapters/task_file.py`,
+- [x] T9. [P] `TomlTaskFileSource(path)` — ficheros: `src/ia_testing/adapters/task_file.py`,
   `tests/test_toml_source.py`. Hace lo siguiente:
   - lee los bytes, los decodifica con `utf-8-sig` (H11) y aplica `tomllib.loads`;
   - convierte `FileNotFoundError`, `IsADirectoryError`, `PermissionError`, otros `OSError`,
@@ -83,10 +83,10 @@ resolvió el 2026-10-20 así:
   - Seguridad: `test_malformed_toml_does_not_echo_content`;
   - CA-12: `test_empty_file`;
   - H11: `test_utf8_bom_is_accepted`.
-- [ ] T10. Caso de uso `validate_task_file(source, runner_names)` — ficheros:
+- [x] T10. Caso de uso `validate_task_file(source, runner_names)` — ficheros:
   `src/ia_testing/app/task_file.py`, `tests/test_app_task_file.py` — verificación:
   `test_validate_task_file_returns_errors_or_empty` con el `TomlTaskFileSource` real en `tmp_path`
-- [ ] T11. Salida del comando y CLI cyclopts — ficheros:
+- [x] T11. Salida del comando y CLI cyclopts — ficheros:
   `src/ia_testing/adapters/report/__init__.py`, `src/ia_testing/adapters/report/validation.py`,
   `src/ia_testing/cli.py`, `tests/test_cli.py`. Incluye:
   - `print_validation(errors, out, err) -> int`;
@@ -99,7 +99,7 @@ resolvió el 2026-10-20 así:
   - CA-08: `test_validate_invalid_file_reports_all_errors_in_order`;
   - CA-13, CA-15 y CA-16 de extremo a extremo, y RNF-05: `test_validate_unreadable_or_malformed_file_fails`;
   - Seguridad: el valor de `api_key` no aparece en stderr.
-- [ ] T12. `docs/config_file.md` y enlace en `README.md` — ficheros: `docs/config_file.md`,
+- [x] T12. `docs/config_file.md` y enlace en `README.md` — ficheros: `docs/config_file.md`,
   `README.md`, `tests/test_docs.py`. El documento recoge:
   - campos, tipos, obligatoriedad, valores por defecto y permitidos;
   - formato de errores, con los ejemplos en bloques `text`;
@@ -108,7 +108,7 @@ resolvió el 2026-10-20 así:
 
   Verificación: `test_config_file_examples_are_valid` (CA-18): extrae **todos** los bloques
   `toml` (H12), falla si no hay ninguno y está en rojo mientras no exista el documento.
-- [ ] T13. [P] `docs/ARCHITECTURE.md` — ficheros: `docs/ARCHITECTURE.md`. Cambios:
+- [x] T13. [P] `docs/ARCHITECTURE.md` — ficheros: `docs/ARCHITECTURE.md`. Cambios:
   - §3: fila nueva para `adapters/task_file.py` y `validation.py` en la fila de `report/`;
   - §8: fichero de tarea, configuración de runner y el matiz de Tarea;
   - §10: el fichero de tarea no es configuración de cyclopts.

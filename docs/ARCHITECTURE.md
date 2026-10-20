@@ -32,9 +32,10 @@ flowchart LR
 | `src/ia_testing/domain/` | `Task`, `RunResult`, `Comparison`; los Protocols `Runner`, `Workspace`, `ResultStore` y `TaskFileSource`; y `task_file.py` (modelo y validación del fichero de tarea: `parse_task_file()`) | Python puro: sin E/S ni `subprocess` |
 | `src/ia_testing/app/` | Casos de uso: `run_comparison()`, `list_runners()` | Solo depende de `domain` |
 | `src/ia_testing/adapters/runners/` | Un fichero por runner (`karajan.py`, más adelante `claude.py`, `codex.py`…) y el registro de runners (`registry.py`: `RUNNER_NAMES`) | Único sitio donde se llama a herramientas externas |
+| `src/ia_testing/adapters/task_file.py` | `TomlTaskFileSource`: lee el fichero de tarea (TOML) y convierte cualquier fallo de lectura o de sintaxis en `InvalidTaskFile` | Implementa `TaskFileSource`; no es configuración de la CLI (ver §10) |
 | `src/ia_testing/adapters/workspace/` | Creación y limpieza del `git worktree` de cada ejecución | Implementa `Workspace`; llama a `git` por `subprocess` |
 | `src/ia_testing/adapters/storage/` | Persistencia de resultados en JSON en disco | Implementa `ResultStore` |
-| `src/ia_testing/adapters/report/` | Salida por terminal (Rich) y Markdown | |
+| `src/ia_testing/adapters/report/` | Salida por terminal (Rich) y Markdown; `validation.py` escribe el resultado de `validate` y devuelve el código de salida | |
 | `src/ia_testing/cli.py` | cyclopts: parsea, monta los adapters y llama a `app` | Sin lógica |
 | `tests/` | Tests con un runner falso que implementa `Runner` | Los que usan herramientas reales llevan marcador y no se ejecutan por defecto |
 | `scripts/check.sh` | Verificación completa (lo mismo que CI) | |
@@ -94,8 +95,10 @@ Romper uno exige un ADR nuevo que lo cambie, no una excepción silenciosa.
 
 | Término | Significado | En el código |
 |---|---|---|
-| Tarea | Trabajo de programación que se lanza igual contra varios runners | `domain.Task` |
+| Tarea | Trabajo de programación que se lanza contra varios runners: mismo tipo de trabajo para todos y, por defecto, el mismo prompt; cada configuración de runner puede ajustar el prompt | `domain.Task` |
 | Runner | Herramienta que ejecuta una tarea: Karajan o, más adelante, la CLI de un agente | Protocol `domain.Runner`; implementaciones en `adapters/runners/` |
+| Fichero de tarea | Fichero TOML que describe una tarea y los runners con los que se lanza: `type`, un `prompt` común opcional y la lista `[[runners]]`. Esquema en [`config_file.md`](config_file.md) | `domain.TaskFile`; lectura en `adapters/task_file.py` |
+| Configuración de runner | Cada elemento de `[[runners]]`: `id`, `runner`, `model`, `local` y `prompt` opcional. Su prompt efectivo es el propio o, si no tiene, el común | `domain.RunnerConfig` |
 | Resultado | Lo que produce un runner al ejecutar una tarea | `domain.RunResult` |
 | Comparación | Conjunto de resultados de la misma tarea en varios runners | `domain.Comparison` |
 | Espacio de trabajo | `git worktree` aislado donde un runner ejecuta una tarea | Protocol `domain.Workspace`; implementación en `adapters/workspace/` |
@@ -114,6 +117,7 @@ Romper uno exige un ADR nuevo que lo cambie, no una excepción silenciosa.
 - **Errores:** los fallos de una herramienta externa se convierten en el adapter en un `RunResult` fallido; no se propagan excepciones de `subprocess` fuera de `adapters/`.
 - **Seguridad:** ver las invariantes de la §6 y [`SECURITY.md`](../SECURITY.md).
 - **Configuración:** la resuelve cyclopts (argumentos, variables de entorno y TOML) en `cli.py`.
+- **Fichero de tarea:** es un dato de entrada del comando `validate`, no configuración de la CLI: no lo resuelve cyclopts. `cli.py` solo recibe su ruta (`Path`); lo lee `adapters/task_file.py` y lo valida `domain` sin E/S.
 - **Tests:** unitarios con runner falso y `tmp_path` real para el storage; los de integración con herramientas reales van marcados y son opcionales.
 
 ## 11. Decisiones
