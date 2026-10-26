@@ -13,3 +13,4 @@ Decisiones de arquitectura del proyecto, con su contexto y las alternativas desc
 | [0003](0003-squash-merge-conventional-commits.md) | Squash merge con Conventional Commits en el título de la PR | aceptado | 2026-10-14 |
 | [0004](0004-dependencias-iniciales.md) | Dependencias iniciales del proyecto | aceptado | 2026-10-19 |
 | [0005](0005-git-worktree-por-ejecucion.md) | Un git worktree por ejecución de runner | aceptado | 2026-10-19 |
+| [0006](0006-dobles-de-test-para-adapters.md) | Dobles de test permitidos para los adapters que lanzan procesos | propuesto | 2026-10-21 |

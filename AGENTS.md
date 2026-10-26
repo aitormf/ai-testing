@@ -2,7 +2,7 @@
 
 ## Proyecto
 CLI local (Python 3.13, cyclopts) que lanza la misma tarea de programación contra varios
-runners (Karajan Code; más adelante Claude Code, Codex…) y compara los resultados.
+runners (Claude Code; más adelante Codex, OpenCode, Karajan Code…) y compara los resultados.
 Arquitectura, capas y principios: docs/ARCHITECTURE.md. Decisiones: docs/adr/.
 
 ## Comandos
@@ -20,13 +20,18 @@ Arquitectura, capas y principios: docs/ARCHITECTURE.md. Decisiones: docs/adr/.
 - Runner nuevo = un fichero en `adapters/runners/` + una línea en el registro. Si tienes que
   tocar `domain` o `app` para añadirlo, para y pregunta.
 - `cli.py` solo parsea, monta adapters y delega en `app`: nada de lógica ahí.
-- Tests: el único doble es un runner falso que implementa el Protocol `Runner`. No parchees
-  `subprocess`. Storage con `tmp_path`; `adapters/workspace/` contra un repo git real en `tmp_path`.
+- Tests: los dobles son un runner falso que implementa el Protocol `Runner` y, para los adapters que
+  lanzan procesos, ejecutables o scripts falsos generados por los propios tests en `tmp_path`.
+  Se permite además una subclase de un adapter real que solo inyecta un fallo (por ejemplo, un
+  `KeyboardInterrupt` en una llamada concreta) y delega todo lo demás. No parchees `subprocess`. Storage con `tmp_path`; `adapters/workspace/` contra un repo git real en `tmp_path`.
 - Los tests que necesitan herramientas externas llevan `@pytest.mark.integration`.
 - Cada ejecución trabaja en su propio `git worktree`, que se conserva; nunca en el working tree actual.
 - Un fallo de una herramienta externa se convierte en un `RunResult` fallido en el adapter; no
   propagues excepciones de `subprocess` fuera de `adapters/`.
-- Nunca leas ni guardes credenciales de las herramientas externas, ni variables de entorno en los resultados.
+- Credenciales: la CLI solo pasa las credenciales de la lista de RF-14 (`ANTHROPIC_API_KEY`,
+  `CLAUDE_CODE_OAUTH_TOKEN`) al agente y las enmascara en los logs; nunca las guarda. Nunca leas
+  ni guardes credenciales de las herramientas externas (ficheros de configuración o de sesión), ni
+  variables de entorno en los resultados.
 
 ## Planificación
 Antes de implementar un cambio no trivial, revisa tu plan contra la sección
@@ -35,7 +40,11 @@ Antes de implementar un cambio no trivial, revisa tu plan contra la sección
 ## Flujo de trabajo
 - Proceso de ramas, PRs y revisión: ver CONTRIBUTING.md.
 - Cambios no triviales: spec y plan en `docs/specs/` antes de implementar.
-- TDD: escribe el test, compruébalo en ROJO, implementa y pásalo a VERDE.
+- TDD, un test cada vez: escríbelo, compruébalo en ROJO por el motivo esperado, escribe solo el
+  código que lo hace pasar y ve a VERDE antes de escribir el siguiente. No escribas código que ningún
+  test en rojo pida; refactoriza solo en verde. La infraestructura de test (fakes, fixtures) se
+  escribe antes y no cuenta como ciclo. En el informe, indica por test el motivo del fallo visto en
+  rojo, y si alguno no se vio en rojo, di por qué.
 - No borres ni debilites tests para que pasen. Si un test parece incorrecto, para y pregunta.
 - PRs ≤ 400 líneas; el título de la PR en Conventional Commits (se integra con squash).
 - Nunca añadas `Co-Authored-By` ni otras líneas de atribución a commits o PRs.

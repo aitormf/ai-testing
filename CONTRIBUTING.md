@@ -64,8 +64,8 @@ Lo comprueban las herramientas (`./scripts/check.sh` y CI); aquí solo se resume
 - **Formato y lint:** ruff, con la configuración de `pyproject.toml`.
 - **Tipos:** mypy. Las funciones públicas van tipadas.
 - **Arquitectura:** import-linter comprueba la regla de capas y que `subprocess` no aparezca en `domain` ni en `app`.
-- **Test primero (TDD):** escribe el test, compruébalo en rojo e implementa hasta verde. En un bug, primero un test que lo reproduzca.
-- **Qué se falsea en los tests:** solo el `Runner`, con un runner falso que implementa el Protocol. No se parchea `subprocess`. El storage se prueba con `tmp_path` real, y `adapters/workspace/` contra un repositorio git real creado en `tmp_path`.
+- **Test primero (TDD):** un test cada vez: escríbelo, compruébalo en rojo, escribe solo el código que lo pasa a verde y sigue con el siguiente. En un bug, primero un test que lo reproduzca.
+- **Qué se falsea en los tests:** el `Runner`, con un runner falso que implementa el Protocol, y las herramientas externas, con ejecutables o scripts falsos que generan los propios tests en `tmp_path` (por ejemplo, scripts Python lanzados con `sys.executable`). También se permite una subclase de un adapter real que solo inyecta un fallo (por ejemplo, un `KeyboardInterrupt` en una llamada concreta) y delega todo lo demás. No se parchea `subprocess`. El storage se prueba con `tmp_path` real, y `adapters/workspace/` contra un repositorio git real creado en `tmp_path`.
 - **Tests con herramientas reales:** llevan el marcador `integration` y no se ejecutan por defecto.
 - **Cobertura:** CI exige como mínimo un **80 %** global. No la bajes sin justificarlo.
 - **Dependencias:** ninguna dependencia nueva sin la aprobación de la persona responsable y sin un ADR en la misma PR (principio P8). Comprueba que el paquete existe, está mantenido y es el que crees (cuidado con nombres parecidos).

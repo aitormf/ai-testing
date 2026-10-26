@@ -73,7 +73,7 @@ Estructura del directorio de una ejecución (RF-07):
 | `adapters/storage/json_store.py` | `JsonResultStore`: `create_run(base_id, base_dir)` (crea `base_dir` con `parents=True`, crea el directorio de la ejecución en exclusiva con `mkdir(exist_ok=False)` y prueba `-2`, `-3`… si ya existe; crea `logs/` y `worktrees/`), `save(location, record)` (escribe un temporal y lo renombra de forma atómica; `OSError` → `StoreError`) | 1 |
 | `app/run.py` | `RunOptions`, `RunOutcome`, `run_task()` (flujo de los pasos 1 a 7; interrupción; fallo de `save`) | 2 |
 | `adapters/runners/_process.py` | `run_logged(argv, cwd, env, stdin_text, timeout_s, stdout_path, stderr_path, secrets) -> ProcessResult`. Ver "Gestión de procesos" | 3 |
-| `adapters/runners/claude.py` | `ClaudeRunner`: `check(configs)` (`shutil.which("claude")` → error si falta; aviso de `bypassPermissions`; aviso por cada `local = true`); `run(request)`. Funciones puras: `build_argv(exe, model)`, `build_env(source_env) -> (env, secrets)`, `parse_result(jsonl_path) -> Execution` | 4 |
+| `adapters/runners/claude.py` | `ClaudeRunner`: `check(configs)` (`shutil.which("claude")` → error si falta; aviso de `bypassPermissions`; aviso por cada `local = true`); `run(request)`. Funciones puras: `build_argv(exe, model)`, `build_env(source_env) -> (env, secrets)`, `parse_result(jsonl_path) -> OutputSummary` (tipo común a todos los runners, en `adapters/runners/_summary.py`; `run()` compone el `Execution` con el código de salida y la duración) | 4 |
 | `adapters/runners/registry.py` | `RUNNERS: Mapping[str, Callable[[], Runner] | None] = {"claude": ClaudeRunner, "codex": None, "opencode": None}`; `RUNNER_NAMES = tuple(RUNNERS)` (lo sigue usando `validate`); `build_runners() -> dict[str, Runner | None]` (instancia los implementados, para que `cli` no tenga lógica) | 4 |
 | `tests/fakes.py` | Fixture que genera en `tmp_path` el ejecutable `claude` falso (shebang con `sys.executable`, bit de ejecución) y una función para escribir su escenario. Ver Pruebas | 4 |
 | `adapters/report/run.py` | `print_run(outcome, out, err) -> int`: errores previos → stderr y 2; resumen → stdout; devuelve 0 o 1 | 5 |
@@ -97,8 +97,9 @@ Cada PR actualiza la documentación de lo que introduce (ARCHITECTURE.md §12):
   arranque.
 - **Stdin:** un hilo escribe el prompt y cierra stdin, ignorando `BrokenPipeError` y `OSError`. Así
   un prompt grande no bloquea la CLI y la escritura cuenta dentro del timeout.
-- **Salida:** dos hilos leen stdout y stderr línea a línea en binario, decodifican con
-  `errors="replace"`, sustituyen cada valor de `secrets` por `***` y escriben en su fichero.
+- **Salida:** dos hilos leen stdout y stderr línea a línea en binario, sustituyen
+  cada valor de `secrets` (codificado en UTF-8) por `***` y escriben los bytes en su fichero, sin
+  decodificar: el log conserva los bytes exactos salvo el enmascarado (RF-23, RF-24).
 - **Espera:** con sondeo (`proc.wait(timeout=0.2)` en bucle hasta el timeout total), para que un
   `KeyboardInterrupt` del hilo principal se atienda en cualquier momento.
 - **Final, siempre** (salida normal, timeout o interrupción): `killpg(SIGTERM)` al grupo, 5 s de
@@ -268,6 +269,12 @@ Desviación de la spec: en "Entidades", la spec dice que el `Runner` devuelve un
 el plan devuelve un `Execution` (estado, motivo, duración, coste, tokens) y `app` compone el
 `RunResult` con la configuración, el worktree, la rama y los logs, que el runner no necesita
 conocer. Así un runner nuevo implementa menos.
+
+Desviación del plan: `parse_result` devuelve un `OutputSummary` (`is_error`, coste y tokens), no un
+`Execution`, porque el estado y la duración dependen del proceso y no del fichero. El tipo es común a
+todos los runners y vive en `adapters/runners/_summary.py`; no toca `domain` ni `app`. La función que
+compone el `Execution` (precedencia timeout, código de salida, `is_error`) se extraerá cuando haya un
+segundo runner que confirme qué varía.
 
 ## Pruebas
 
