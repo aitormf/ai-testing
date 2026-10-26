@@ -9,6 +9,11 @@ ia-testing validate <fichero>
 
 Validar no ejecuta ningún runner ni herramienta externa, ni crea worktrees.
 
+El mismo fichero es la entrada de `ia-testing run <fichero>`, que lo valida con estas mismas reglas
+y, si es válido, lo ejecuta (ver [`run.md`](run.md)). Con `run`, el `type` solo se guarda en los
+resultados: no cambia cómo se ejecuta la tarea, y cada configuración recibe su prompt efectivo tal
+cual. Cada `id` da nombre al worktree, a la rama y a los logs de su configuración.
+
 ## Esquema
 
 El esquema es cerrado: cualquier clave que no figure en las tablas siguientes es un error, a
