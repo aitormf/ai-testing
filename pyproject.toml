@@ -10,7 +10,7 @@ authors = [
 ]
 requires-python = ">=3.13"
 dependencies = [
-    "cyclopts>=4,<5",
+    "cyclopts>=4,<6",
 ]
 
 [project.scripts]
